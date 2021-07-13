@@ -4,6 +4,8 @@ import java.util.Arrays;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -24,17 +26,33 @@ import com.yit.common.utils.R;
  * @email yit36@pitt.edu
  * @date 2021-07-04 18:24:43
  */
+@RefreshScope
 @RestController
 @RequestMapping("coupons/coupon")
 public class CouponController {
     @Autowired
     private CouponService couponService;
 
+    // test feign int member/feign
     @RequestMapping("/member/list")
     public R memberCoupon(){
         CouponEntity couponEntity = new CouponEntity();
         couponEntity.setCouponName("discount 10%");
         return R.ok().put("coupon", Arrays.asList(couponEntity));
+    }
+
+    // nacos register - nacos-config and boostrap(spring boot version 2.5+)
+    // priority bootstrap > application
+    // auto refresh in nacos @RefreshScope
+    // find in application.properties
+    @Value("${coupon.user.name}")
+    private String name;
+    @Value("${coupon.user.discount}")
+    private String discount;
+
+    @RequestMapping("/test")
+    public R test(){
+        return R.ok().put("name", name).put("discount", discount);
     }
 
 
