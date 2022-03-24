@@ -1,6 +1,7 @@
 package com.yit.ecommercial.products.controller;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +30,17 @@ import com.yit.common.utils.R;
 public class CategoryController {
     @Autowired
     private CategoryService categoryService;
+
+    /**
+     * find all the categories and its children, display in tree
+     */
+    @RequestMapping("list/tree")
+    public R list(){
+        List<CategoryEntity> categoryEntityList = categoryService.listWithTree(); // find all branches
+
+        return R.ok().put("data", categoryEntityList);
+    }
+
 
     /**
      * 列表
@@ -76,7 +88,11 @@ public class CategoryController {
      */
     @RequestMapping("/delete")
     public R delete(@RequestBody Long[] catIds){
-		categoryService.removeByIds(Arrays.asList(catIds));
+
+        // check if current cat is occupied
+        categoryService.removeMenuByIds(Arrays.asList(catIds));
+
+//        categoryService.removeByIds(Arrays.asList(catIds));
 
         return R.ok();
     }
